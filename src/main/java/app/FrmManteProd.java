@@ -18,10 +18,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import model.Categoria;
 import model.Producto;
 import model.Proveedor;
+import javax.swing.JTable;
 
 public class FrmManteProd extends JFrame {
 
@@ -34,6 +36,9 @@ public class FrmManteProd extends JFrame {
 	private JTextField txtDescripcion;
 	private JTextField txtStock;
 	private JTextField txtPrecio;
+	private JTable tblSalida;
+	
+	DefaultTableModel modelo = new DefaultTableModel();
 	
 	/**
 	 * Launch the application.
@@ -57,7 +62,7 @@ public class FrmManteProd extends JFrame {
 	public FrmManteProd() {
 		setTitle("Mantenimiento de Productos");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 390);
+		setBounds(100, 100, 450, 608);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -148,7 +153,21 @@ public class FrmManteProd extends JFrame {
 		});
 		btnBuscar.setBounds(324, 63, 89, 23);
 		contentPane.add(btnBuscar);
-
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(10, 362, 414, 196);
+		contentPane.add(scrollPane_1);
+		
+		tblSalida = new JTable();
+		scrollPane_1.setViewportView(tblSalida);
+		tblSalida.setModel(modelo);
+		modelo.addColumn("CÃ³digo");
+		modelo.addColumn("Producto");
+		modelo.addColumn("Stock");
+		modelo.addColumn("Precio");
+		modelo.addColumn("Categoria");
+		modelo.addColumn("Proveedor");
+		
 		llenaCombo();
 	}
 
@@ -201,9 +220,9 @@ public class FrmManteProd extends JFrame {
 			em.persist(p);
 			em.getTransaction().commit();
 			//MOSTRAR LOS MENSAJES DE EXITO O ERROR
-			aviso("Producto Registrado...¡", "Aviso del sistema", JOptionPane.INFORMATION_MESSAGE);
+			aviso("Producto Registrado...ï¿½", "Aviso del sistema", JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception e) {
-			aviso("Error al registrar Producto...¡\n"+e.getMessage(), "Aviso del sistema", JOptionPane.ERROR_MESSAGE);		
+			aviso("Error al registrar Producto...ï¿½\n"+e.getMessage(), "Aviso del sistema", JOptionPane.ERROR_MESSAGE);		
 		}		
 		em.close();
 		
@@ -212,7 +231,7 @@ public class FrmManteProd extends JFrame {
 	private String leerCodigo() {
 		//validaciones
 		if(txtCodigo.getText().isEmpty()) {
-			aviso("Debe ingresasr un código...¡", "Error en campo", JOptionPane.ERROR_MESSAGE);	
+			aviso("Debe ingresasr un cï¿½digo...ï¿½", "Error en campo", JOptionPane.ERROR_MESSAGE);	
 			return null;
 		}
 		return txtCodigo.getText();
@@ -236,14 +255,29 @@ public class FrmManteProd extends JFrame {
 				for(Producto p : lsProducto) {
 					imprimir("*****************************");
 					imprimir("Id Producto : " + p.getId_prod());
-					imprimir("Descripción : " + p.getDes_prod());
+					imprimir("Descripciï¿½n : " + p.getDes_prod());
 					imprimir("Stock : " + p.getStk_prod());
 					imprimir("Precio : " + p.getPre_prod());
-					imprimir("Categoría : " + p.getIdcategoria() + 
+					imprimir("Categorï¿½a : " + p.getIdcategoria() + 
 							"-" + p.getObjCategoria().getDescripcion());
 					imprimir("Estado : " + p.getEst_prod());
 					imprimir("Id Proveedor : " + p.getIdproveedor() + 
 							"-" + p.getObjProveedor().getNombre_rs());
+					//PARA LA TABLA
+					
+					Object datos[] = {p.getId_prod(), p.getDes_prod(), p.getStk_prod(),
+							p.getPre_prod(),
+							p.getIdcategoria() + "-" + p.getObjCategoria().getDescripcion(),
+							p.getIdproveedor() + "-" + p.getObjProveedor().getNombre_rs()
+					};
+					
+					modelo.addRow(datos);
+					
+					
+					
+					
+					
+					
 				}
 				//cerrar
 				em.close();
@@ -268,7 +302,7 @@ public class FrmManteProd extends JFrame {
 		
 		//SI EL CODIGO NO EXISTE, MUESTRA UN MENSAJE, SINO MUESTRA LOS DATOS DEL PRODUCTO
 		if(p == null) {
-			aviso("Código NO existe", "Aviso del sistema", JOptionPane.ERROR_MESSAGE);	
+			aviso("Cï¿½digo NO existe", "Aviso del sistema", JOptionPane.ERROR_MESSAGE);	
 		}else {
 			txtDescripcion.setText(p.getDes_prod());
 			txtStock.setText(p.getStk_prod()+"");
